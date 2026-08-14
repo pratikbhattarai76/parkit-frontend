@@ -1,11 +1,7 @@
-import { Button } from "@/components/ui/button";
+import AppRoutes from "@/routes/AppRoutes";
 
 function App() {
-  return (
-    <div className="flex min-h-svh items-center justify-center">
-      <Button>Parkit</Button>
-    </div>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
