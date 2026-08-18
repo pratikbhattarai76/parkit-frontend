@@ -1,52 +1,78 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import authService from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-/**
- * AuthContext
- *
- * Minimal authentication-state abstraction.
- * This context intentionally does NOT implement any authentication logic.
- *
- * Shape of the context value:
- *   {
- *     user:            object | null  – populated user object when authenticated, null otherwise
- *     isLoading:       boolean        – true while auth state is being resolved (e.g. on first load)
- *   }
- *
- * The `user` field will be set by a real auth mechanism (e.g. a login flow,
- * a session restore call, etc.) once that is implemented.
- *
- * INTENTIONALLY left as a no-op stub so the rest of the app can compile and
- * route correctly before authentication is wired up.
- */
 const AuthContext = createContext(null);
 
-/**
- * AuthProvider
- *
- * Wrap the application (or a subtree) with this provider.
- * At this stage it only exposes a neutral initial state.
- * Replace the `useState` initial values when real auth is implemented.
- */
 export function AuthProvider({ children }) {
-  // user: null  → not authenticated / unknown
-  // isLoading: false → no async resolution happening yet
-  // Both will be driven by real auth logic in a later task.
-  const [user] = useState(null);
-  const [isLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load user from local storage on initial mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("parkit_user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        localStorage.removeItem("parkit_user");
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const login = async (credentials) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.login(credentials);
+      // Assuming response contains user data and token
+      const userData = response.user || response; // Adapt based on actual API
+      setUser(userData);
+      localStorage.setItem("parkit_user", JSON.stringify(userData));
+      if (response.token) {
+        localStorage.setItem("parkit_token", response.token);
+      }
+      return userData;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (userData) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.register(userData);
+      return response;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await authService.logout();
+    } catch (error) {
+      // Ignore logout errors (like if token is already expired)
+    } finally {
+      setUser(null);
+      localStorage.removeItem("parkit_user");
+      localStorage.removeItem("parkit_token");
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (data) => {
+    return await authService.resetPassword(data);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-/**
- * useAuth
- *
- * Convenience hook to consume the auth context.
- * Throws if used outside of <AuthProvider>.
- */
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (ctx === null) {
