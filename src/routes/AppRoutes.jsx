@@ -4,12 +4,15 @@ import MainLayout from "@/layouts/MainLayout";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import Profile from "@/pages/Profile";
 import Listings from "@/pages/Listings";
 import ListingDetails from "@/pages/ListingDetails";
 import Reservations from "@/pages/Reservations";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
@@ -20,12 +23,18 @@ export default function AppRoutes() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/listings" element={<Listings />} />
             <Route path="/listings/:id" element={<ListingDetails />} />
-            <Route path="/reservations" element={<Reservations />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<Admin />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/reservations" element={<Reservations />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+            
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
