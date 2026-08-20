@@ -36,37 +36,50 @@ export default function ResetPassword() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Reset Password</h2>
-        <p style={styles.subtitle}>Enter your new password below</p>
+    <div className="min-h-[80vh] flex items-center justify-center p-4 bg-gray-50/50">
+      <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full max-w-md transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
+          <p className="text-sm text-gray-500">Enter your new password below</p>
+        </div>
         
-        {status === "error" && <div style={styles.error}>{message}</div>}
-        {status === "success" && <div style={styles.success}>{message}</div>}
+        {status === "error" && (
+          <div className="bg-red-50/80 backdrop-blur text-red-600 p-4 rounded-xl mb-6 text-sm text-center border border-red-100 animate-in fade-in slide-in-from-top-2">
+            {message}
+          </div>
+        )}
         
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="password">New Password</label>
+        {status === "success" && (
+          <div className="bg-green-50/80 backdrop-blur text-green-700 p-4 rounded-xl mb-6 text-sm text-center border border-green-100 animate-in fade-in slide-in-from-top-2">
+            {message}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-gray-700" htmlFor="password">New Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              placeholder="••••••••"
               required
               minLength="6"
               disabled={status === "success"}
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="confirmPassword">Confirm Password</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-gray-700" htmlFor="confirmPassword">Confirm Password</label>
             <input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              style={styles.input}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              placeholder="••••••••"
               required
               minLength="6"
               disabled={status === "success"}
@@ -75,113 +88,28 @@ export default function ResetPassword() {
           
           <button 
             type="submit" 
-            style={styles.button} 
             disabled={status === "loading" || status === "success"}
+            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 disabled:transform-none"
           >
-            {status === "loading" ? "Resetting..." : "Reset Password"}
+            {status === "loading" ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Resetting...
+              </span>
+            ) : "Reset Password"}
           </button>
         </form>
         
-        <p style={styles.footer}>
-          Return to <Link to="/login" style={styles.link}>Log in</Link>
+        <p className="mt-8 text-center text-sm text-gray-500">
+          Return to{" "}
+          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+            Log in
+          </Link>
         </p>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "80vh",
-    padding: "20px",
-    backgroundColor: "#f4f7f6"
-  },
-  card: {
-    backgroundColor: "white",
-    padding: "40px",
-    borderRadius: "12px",
-    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.05)",
-    width: "100%",
-    maxWidth: "400px"
-  },
-  title: {
-    margin: "0 0 10px",
-    fontSize: "24px",
-    fontWeight: "600",
-    color: "#333",
-    textAlign: "center"
-  },
-  subtitle: {
-    margin: "0 0 25px",
-    color: "#666",
-    textAlign: "center",
-    fontSize: "14px"
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px"
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px"
-  },
-  label: {
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "#444"
-  },
-  input: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    fontSize: "16px",
-    outline: "none",
-    transition: "border-color 0.2s"
-  },
-  button: {
-    backgroundColor: "#0066cc",
-    color: "white",
-    border: "none",
-    padding: "14px",
-    borderRadius: "8px",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "background-color 0.2s"
-  },
-  link: {
-    color: "#0066cc",
-    textDecoration: "none",
-    fontSize: "14px",
-    fontWeight: "500"
-  },
-  footer: {
-    marginTop: "25px",
-    textAlign: "center",
-    fontSize: "14px",
-    color: "#666"
-  },
-  error: {
-    backgroundColor: "#ffebee",
-    color: "#c62828",
-    padding: "12px",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    fontSize: "14px",
-    textAlign: "center"
-  },
-  success: {
-    backgroundColor: "#e8f5e9",
-    color: "#2e7d32",
-    padding: "12px",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    fontSize: "14px",
-    textAlign: "center"
-  }
-};
