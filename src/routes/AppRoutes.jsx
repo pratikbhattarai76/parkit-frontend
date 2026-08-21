@@ -12,7 +12,10 @@ import ListingDetails from "@/pages/ListingDetails";
 import Reservations from "@/pages/Reservations";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
+import AdminUsersPage from "@/pages/AdminUsersPage";
+import AdminListingsPage from "@/pages/AdminListingsPage";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminRoute from "./AdminRoute";
 
 export default function AppRoutes() {
   return (
@@ -32,7 +35,13 @@ export default function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/reservations" element={<Reservations />} />
               <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+
+            {/* Admin-only routes */}
+            <Route element={<AdminRoute />}>
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/listings" element={<AdminListingsPage />} />
             </Route>
             
             <Route path="*" element={<Navigate to="/" replace />} />
