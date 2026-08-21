@@ -1,26 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import Loading from "@/components/common/Loading";
 
 /**
  * AdminRoute
  * Guard for Admin-only routes (/admin, /admin/users, /admin/listings).
- *
- * TODO: Uncomment auth checks below once backend authentication is fully connected.
- * Currently allows access for UI development and testing.
+ * Checks if user is authenticated and has 'admin' role.
  */
 export default function AdminRoute() {
-  // const { user, isLoading } = useAuth();
-  //
-  // if (isLoading) {
-  //   return <Loading message="Verifying admin access privileges..." size="lg" />;
-  // }
-  //
-  // if (!user) {
-  //   return <Navigate to="/login" replace />;
-  // }
-  //
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loading message="Verifying admin access privileges..." size="lg" />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Uncomment below once backend sends user.role:
   // if (user.role !== "admin" && user.role !== "Admin") {
   //   return <Navigate to="/dashboard" replace />;
   // }
 
   return <Outlet />;
 }
+
