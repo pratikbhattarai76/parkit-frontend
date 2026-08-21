@@ -12,7 +12,9 @@ export default function Navbar() {
     { name: "Reservations", path: "/reservations" },
     { name: "Dashboard", path: "/dashboard" },
     { name: "Profile", path: "/profile" },
-    { name: "Admin", path: "/admin" },
+    { name: "Admin Dashboard", path: "/admin" },
+    { name: "Admin Users", path: "/admin/users" },
+    { name: "Admin Listings", path: "/admin/listings" },
   ];
 
   return (
