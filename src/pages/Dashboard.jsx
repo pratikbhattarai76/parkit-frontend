@@ -27,11 +27,11 @@ export default function Dashboard() {
           Your Dashboard
         </p>
 
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">
+        <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
           Welcome back 👋
         </h1>
 
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-slate-600 dark:text-slate-400">
           Manage your parking activity and discover recommended spots near
           you.
         </p>
@@ -45,11 +45,13 @@ export default function Dashboard() {
             <Card key={stat.title}>
               <CardContent className="flex items-center justify-between p-6">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                     {stat.title}
                   </p>
 
-                  <p className="mt-2 text-3xl font-bold">{stat.value}</p>
+                  <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                    {stat.value}
+                  </p>
                 </div>
 
                 <div className="rounded-lg bg-muted p-3">
@@ -64,9 +66,11 @@ export default function Dashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-lg font-semibold">Recommended Near You</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              Recommended Near You
+            </h2>
 
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Parking recommendations based on your location will appear here.
             </p>
           </CardContent>
@@ -74,9 +78,11 @@ export default function Dashboard() {
 
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-lg font-semibold">Recent Reservations</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              Recent Reservations
+            </h2>
 
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-lg font-semibold text-slate-900 dark:text-white">
               Your recent parking reservations will appear here.
             </p>
           </CardContent>
