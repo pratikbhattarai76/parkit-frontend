@@ -1,6 +1,7 @@
-import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
 import DashboardStats from "@/components/dashboard/DashboardStats";
+import QuickActions from "@/components/dashboard/QuickActions";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export default function Dashboard() {
       </section>
 
       <DashboardStats />
+      <QuickActions />
 
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
