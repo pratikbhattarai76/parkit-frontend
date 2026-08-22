@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDays, CarFront, Star } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const stats = [
   {
@@ -20,20 +21,24 @@ const stats = [
 ];
 
 export default function Dashboard() {
+  const { user } = useAuth();
+
+  const displayName =
+    user?.name || user?.username || user?.email?.split("@")[0] || "there";
+
   return (
     <div className="space-y-8">
       <section>
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
           Your Dashboard
         </p>
 
         <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Welcome back 👋
+          Welcome back, {displayName} 👋
         </h1>
 
         <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Manage your parking activity and discover recommended spots near
-          you.
+          Manage your parking activity and discover recommended spots near you.
         </p>
       </section>
 
@@ -82,7 +87,7 @@ export default function Dashboard() {
               Recent Reservations
             </h2>
 
-            <p className="text-lg font-semibold text-slate-900 dark:text-white">
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Your recent parking reservations will appear here.
             </p>
           </CardContent>
