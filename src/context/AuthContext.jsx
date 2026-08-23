@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import authService from "../services/authService";
-import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -25,8 +24,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
-      // Assuming response contains user data and token
-      const userData = response.user || response; // Adapt based on actual API
+      const userData = response.user || response;
       setUser(userData);
       localStorage.setItem("parkit_user", JSON.stringify(userData));
       if (response.token) {
@@ -53,7 +51,7 @@ export function AuthProvider({ children }) {
     try {
       await authService.logout();
     } catch (error) {
-      // Ignore logout errors (like if token is already expired)
+      // Ignore logout errors (e.g. token already expired)
     } finally {
       setUser(null);
       localStorage.removeItem("parkit_user");
@@ -66,8 +64,18 @@ export function AuthProvider({ children }) {
     return await authService.resetPassword(data);
   };
 
+  /** Convenience role helpers */
+  const isAdmin =
+    user?.role === "admin" ||
+    user?.role === "ADMIN" ||
+    user?.is_admin === true;
+
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, resetPassword }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, isAuthenticated, isAdmin, login, register, logout, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );
