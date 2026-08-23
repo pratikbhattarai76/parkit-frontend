@@ -35,7 +35,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register({ name, email, password });
+      await register({ name, username: name, email, password });
       await login({ email, password });
       navigate("/dashboard", { replace: true });
     } catch (err) {
