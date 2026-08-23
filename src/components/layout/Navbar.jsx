@@ -2,9 +2,11 @@ import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
   const links = [
     { name: "Home", path: "/" },
@@ -12,10 +14,15 @@ export default function Navbar() {
     { name: "Reservations", path: "/reservations" },
     { name: "Dashboard", path: "/dashboard" },
     { name: "Profile", path: "/profile" },
-    { name: "Admin Dashboard", path: "/admin" },
-    { name: "Admin Users", path: "/admin/users" },
-    { name: "Admin Listings", path: "/admin/listings" },
   ];
+
+  const adminLinks = isAdmin
+    ? [
+        { name: "Admin Dashboard", path: "/admin" },
+        { name: "Admin Users", path: "/admin/users" },
+        { name: "Admin Listings", path: "/admin/listings" },
+      ]
+    : [];
 
   return (
     <nav className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
@@ -26,7 +33,7 @@ export default function Navbar() {
               Parkit
             </Link>
             <div className="hidden md:flex items-center gap-6">
-              {links.map((link) => (
+              {[...links, ...adminLinks].map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
@@ -70,7 +77,7 @@ export default function Navbar() {
 
       {isOpen && (
         <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-2 pt-2 pb-4 space-y-1">
-          {links.map((link) => (
+          {[...links, ...adminLinks].map((link) => (
             <NavLink
               key={link.path}
               to={link.path}

@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import authService from "../services/authService";
-import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -25,12 +24,12 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
-      // Assuming response contains user data and token
-      const userData = response.user || response; // Adapt based on actual API
+      const userData = response?.data?.user || response?.user || response;
+      const token = response?.data?.token || response?.token;
       setUser(userData);
       localStorage.setItem("parkit_user", JSON.stringify(userData));
-      if (response.token) {
-        localStorage.setItem("parkit_token", response.token);
+      if (token) {
+        localStorage.setItem("parkit_token", token);
       }
       return userData;
     } finally {
@@ -66,8 +65,17 @@ export function AuthProvider({ children }) {
     return await authService.resetPassword(data);
   };
 
+  const isAuthenticated = !!user;
+  const isAdmin =
+    user?.type === "admin" ||
+    user?.role === "admin" ||
+    user?.role === "Admin" ||
+    user?.is_admin === true;
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, resetPassword }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, isAuthenticated, isAdmin, login, register, logout, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -8,20 +8,19 @@ import Loading from "@/components/common/Loading";
  * Checks if user is authenticated and has 'admin' role.
  */
 export default function AdminRoute() {
-  const { user, isLoading } = useAuth();
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
     return <Loading message="Verifying admin access privileges..." size="lg" />;
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Uncomment below once backend sends user.role:
-  // if (user.role !== "admin" && user.role !== "Admin") {
-  //   return <Navigate to="/dashboard" replace />;
-  // }
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return <Outlet />;
 }
