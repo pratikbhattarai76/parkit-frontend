@@ -24,11 +24,13 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
-      const userData = response.user || response;
+      // API shape: { success, data: { token, user: {...} }, message }
+      const userData = response?.data?.user || response?.user || response;
+      const token = response?.data?.token || response?.token;
       setUser(userData);
       localStorage.setItem("parkit_user", JSON.stringify(userData));
-      if (response.token) {
-        localStorage.setItem("parkit_token", response.token);
+      if (token) {
+        localStorage.setItem("parkit_token", token);
       }
       return userData;
     } finally {
@@ -64,8 +66,9 @@ export function AuthProvider({ children }) {
     return await authService.resetPassword(data);
   };
 
-  /** Convenience role helpers */
+  /** Convenience role helpers — API uses "type" field with value "admin" */
   const isAdmin =
+    user?.type === "admin" ||
     user?.role === "admin" ||
     user?.role === "ADMIN" ||
     user?.is_admin === true;

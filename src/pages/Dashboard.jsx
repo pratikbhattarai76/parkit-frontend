@@ -13,7 +13,10 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
   const displayName =
-    user?.name || user?.username || user?.email?.split("@")[0] || "there";
+    (user?.name && user.name.trim()) ||
+    user?.username ||
+    user?.email?.split("@")[0] ||
+    "there";
 
   const now = new Date();
   const hour = now.getHours();

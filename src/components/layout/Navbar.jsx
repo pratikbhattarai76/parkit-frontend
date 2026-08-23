@@ -52,7 +52,10 @@ export default function Navbar() {
   const links = user ? (isAdmin ? adminLinks : userLinks) : guestLinks;
 
   const displayName =
-    user?.name || user?.username || user?.email?.split("@")[0] || "User";
+    (user?.name && user.name.trim()) ||
+    user?.username ||
+    user?.email?.split("@")[0] ||
+    "User";
   const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
