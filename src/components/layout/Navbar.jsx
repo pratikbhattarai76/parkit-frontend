@@ -7,14 +7,9 @@ import { useAuth } from "@/context/AuthContext";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
-
-  const isAdmin =
-    user?.role === "admin" ||
-    user?.role === "ADMIN" ||
-    user?.is_admin === true;
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -10,15 +10,10 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const displayName =
     user?.name || user?.username || user?.email?.split("@")[0] || "there";
-
-  const isAdmin =
-    user?.role === "admin" ||
-    user?.role === "ADMIN" ||
-    user?.is_admin === true;
 
   const now = new Date();
   const hour = now.getHours();

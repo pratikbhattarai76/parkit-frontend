@@ -18,12 +18,7 @@ const colorMap = {
 };
 
 function Admin() {
-  const { user } = useAuth();
-
-  const isAdmin =
-    user?.role === "admin" ||
-    user?.role === "ADMIN" ||
-    user?.is_admin === true;
+  const { isAdmin } = useAuth();
 
   if (!isAdmin) {
     return <Navigate to="/dashboard" replace />;
