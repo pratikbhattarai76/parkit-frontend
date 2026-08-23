@@ -1,8 +1,6 @@
-import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminBackup from "@/ui_backups/Admin.backup";
 
-function Admin() {
-  return <AdminDashboard />;
+export default function Admin() {
+  return <AdminBackup />;
 }
-
-export default Admin;
 
