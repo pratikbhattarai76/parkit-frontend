@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Car, Github, Twitter } from "lucide-react";
+import { Car } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
