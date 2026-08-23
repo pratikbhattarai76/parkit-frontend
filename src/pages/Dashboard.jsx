@@ -12,11 +12,17 @@ import {
 export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
-  const displayName =
+  const rawName =
     (user?.name && user.name.trim()) ||
     user?.username ||
     user?.email?.split("@")[0] ||
     "there";
+
+  // Capitalize first letter of each word
+  const displayName = rawName
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 
   const now = new Date();
   const hour = now.getHours();
