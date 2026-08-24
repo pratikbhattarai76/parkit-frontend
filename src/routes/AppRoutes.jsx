@@ -16,6 +16,9 @@ import AdminUsersPage from "@/pages/AdminUsersPage";
 import AdminListingsPage from "@/pages/AdminListingsPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
+import AdminListings from "@/pages/AdminListings";
+import CreateListing from "@/pages/CreateListing";
+import EditListing from "@/pages/EditListing";
 
 export default function AppRoutes() {
   return (
@@ -42,6 +45,9 @@ export default function AppRoutes() {
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/listings" element={<AdminListingsPage />} />
+              <Route path="/admin/listings" element={<AdminListings />} />
+              <Route path="/admin/listings/create" element={<CreateListing />} />
+              <Route path="/admin/listings/:id/edit" element={<EditListing />} />
             </Route>
             
             <Route path="*" element={<Navigate to="/" replace />} />

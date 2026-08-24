@@ -24,6 +24,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
+      // API shape: { success, data: { token, user: {...} }, message }
       const userData = response?.data?.user || response?.user || response;
       const token = response?.data?.token || response?.token;
       setUser(userData);
@@ -52,7 +53,7 @@ export function AuthProvider({ children }) {
     try {
       await authService.logout();
     } catch (error) {
-      // Ignore logout errors (like if token is already expired)
+      // Ignore logout errors (e.g. token already expired)
     } finally {
       setUser(null);
       localStorage.removeItem("parkit_user");
@@ -71,6 +72,15 @@ export function AuthProvider({ children }) {
     user?.role === "admin" ||
     user?.role === "Admin" ||
     user?.is_admin === true;
+
+  /** Convenience role helpers — API uses "type" field with value "admin" */
+  const isAdmin =
+    user?.type === "admin" ||
+    user?.role === "admin" ||
+    user?.role === "ADMIN" ||
+    user?.is_admin === true;
+
+  const isAuthenticated = !!user;
 
   return (
     <AuthContext.Provider
