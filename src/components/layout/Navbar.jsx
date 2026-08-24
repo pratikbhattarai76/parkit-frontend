@@ -43,7 +43,7 @@ export default function Navbar() {
 
   const adminLinks = [
     { name: "Home", path: "/", icon: Car },
-    { name: "Listings", path: "/listings", icon: Search },
+    { name: "Listings", path: "/admin/listings", icon: Search },
     { name: "Reservations", path: "/reservations", icon: CalendarDays },
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Admin", path: "/admin", icon: Shield },

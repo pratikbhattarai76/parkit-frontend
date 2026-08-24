@@ -13,6 +13,9 @@ import Reservations from "@/pages/Reservations";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminListings from "@/pages/AdminListings";
+import CreateListing from "@/pages/CreateListing";
+import EditListing from "@/pages/EditListing";
 
 export default function AppRoutes() {
   return (
@@ -33,6 +36,9 @@ export default function AppRoutes() {
               <Route path="/reservations" element={<Reservations />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/listings" element={<AdminListings />} />
+              <Route path="/admin/listings/create" element={<CreateListing />} />
+              <Route path="/admin/listings/:id/edit" element={<EditListing />} />
             </Route>
             
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,5 +1,9 @@
 function ListingDetails() {
-  return <div>Listing Details</div>;
+  return (
+    <div>
+      <h1>Listing Details</h1>
+    </div>
+  );
 }
 
 export default ListingDetails;
