@@ -165,6 +165,16 @@ export default function RecommendedParking() {
                         We couldn't find suitable parking spots near your current
                         location.
                     </p>
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="mt-5"
+                        onClick={handleRetryRecommendations}
+                    >
+                        <RefreshCw className="mr-2 size-4" />
+                        Try Again
+                    </Button>
                 </div>
             );
         }
