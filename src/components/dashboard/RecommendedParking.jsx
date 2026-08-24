@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { MapPin, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,8 +22,8 @@ export default function RecommendedParking() {
     useState(false);
   const [recommendationError, setRecommendationError] = useState(null);
 
-  const fetchRecommendations = useCallback(async () => {
-    if (!location) {
+  const fetchRecommendations = async (currentLocation) => {
+    if (!currentLocation) {
       return;
     }
 
@@ -32,8 +32,8 @@ export default function RecommendedParking() {
 
     try {
       const response = await recommendationService.getRecommendations({
-        lat: location.latitude,
-        lng: location.longitude,
+        lat: currentLocation.latitude,
+        lng: currentLocation.longitude,
       });
 
       const data = Array.isArray(response)
@@ -48,17 +48,25 @@ export default function RecommendedParking() {
     } finally {
       setIsLoadingRecommendations(false);
     }
-  }, [location]);
+  };
 
-  useEffect(() => {
-    if (location) {
-      fetchRecommendations();
-    }
-  }, [location, fetchRecommendations]);
-
-  const handleGetRecommendations = () => {
+  const handleGetRecommendations = async () => {
     setRecommendationError(null);
-    requestLocation();
+
+    const currentLocation = await requestLocation();
+
+    if (currentLocation) {
+      await fetchRecommendations(currentLocation);
+    }
+  };
+
+  const handleRetryRecommendations = async () => {
+    if (location) {
+      await fetchRecommendations(location);
+      return;
+    }
+
+    await handleGetRecommendations();
   };
 
   const isLoading = isLocationLoading || isLoadingRecommendations;
@@ -109,7 +117,7 @@ export default function RecommendedParking() {
             type="button"
             variant="outline"
             className="mt-4"
-            onClick={fetchRecommendations}
+            onClick={handleRetryRecommendations}
           >
             <RefreshCw className="mr-2 size-4" />
             Try Again
