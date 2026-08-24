@@ -6,6 +6,23 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAdmin } = useAuth();
+
+  const links = [
+    { name: "Home", path: "/" },
+    { name: "Listings", path: "/listings" },
+    { name: "Reservations", path: "/reservations" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Profile", path: "/profile" },
+  ];
+
+  const adminLinks = isAdmin
+    ? [
+        { name: "Admin Dashboard", path: "/admin" },
+        { name: "Admin Users", path: "/admin/users" },
+        { name: "Admin Listings", path: "/admin/listings" },
+      ]
+    : [];
   const [profileOpen, setProfileOpen] = useState(false);
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -79,6 +96,8 @@ export default function Navbar() {
               </span>
               <span>Parkit</span>
             </Link>
+            <div className="hidden md:flex items-center gap-6">
+              {[...links, ...adminLinks].map((link) => (
 
             {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-1">
@@ -201,6 +220,34 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-2 pt-2 pb-4 space-y-1">
+          {[...links, ...adminLinks].map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `block rounded-md px-3 py-2 text-base font-medium ${
+                  isActive
+                    ? "bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-white"
+                    : "text-slate-550 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
+                }`
+              }
+            >
+              {link.name}
+            </NavLink>
+          ))}
+          <div className="mt-4 border-t border-slate-200 dark:border-slate-800 pt-4 flex flex-col gap-2 px-3">
+            <Link to="/login" onClick={() => setIsOpen(false)} className="w-full">
+              <Button variant="ghost" size="sm" className="w-full justify-center">
+                Log in
+              </Button>
+            </Link>
+            <Link to="/register" onClick={() => setIsOpen(false)} className="w-full">
+              <Button size="sm" className="w-full justify-center">
+                Sign up
+              </Button>
+            </Link>
         <div className="md:hidden border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
           <div className="space-y-1 px-3 py-3">
             {links.map((link) => (

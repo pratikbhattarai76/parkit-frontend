@@ -1,3 +1,7 @@
+import AdminBackup from "@/ui_backups/Admin.backup";
+
+export default function Admin() {
+  return <AdminBackup />;
 import { useAuth } from "@/context/AuthContext";
 import { Navigate } from "react-router-dom";
 import { Shield, Users, CarFront, CalendarDays, TrendingUp, Settings } from "lucide-react";
@@ -106,4 +110,3 @@ function Admin() {
   );
 }
 
-export default Admin;

@@ -1,3 +1,8 @@
+import AdminDashboard from "@/components/admin/AdminDashboard";
+
+export default function AdminBackup() {
+  return <AdminDashboard />;
+}
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Navigate } from "react-router-dom";

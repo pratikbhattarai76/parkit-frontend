@@ -66,6 +66,13 @@ export function AuthProvider({ children }) {
     return await authService.resetPassword(data);
   };
 
+  const isAuthenticated = !!user;
+  const isAdmin =
+    user?.type === "admin" ||
+    user?.role === "admin" ||
+    user?.role === "Admin" ||
+    user?.is_admin === true;
+
   /** Convenience role helpers — API uses "type" field with value "admin" */
   const isAdmin =
     user?.type === "admin" ||
