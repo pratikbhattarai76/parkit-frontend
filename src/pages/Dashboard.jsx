@@ -6,7 +6,6 @@ import RecommendedParking from "@/components/dashboard/RecommendedParking";
 import {
   LayoutDashboard,
   Sparkles,
-  MapPin,
   CalendarClock,
 } from "lucide-react";
 
@@ -79,18 +78,7 @@ export default function Dashboard() {
 
       {/* Bottom info cards */}
       <section className="grid gap-6 lg:grid-cols-2">
-        <Card className="overflow-hidden border-slate-200 dark:border-slate-800">
-          <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/30">
-            <h2 className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-white">
-              <MapPin className="size-4 text-blue-500" />
-              Recommended Near You
-            </h2>
-          </div>
-
-          <CardContent className="p-6">
-            <RecommendedParking />
-          </CardContent>
-        </Card>
+        <RecommendedParking />
 
         <Card className="overflow-hidden border-slate-200 dark:border-slate-800">
           <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/30">
