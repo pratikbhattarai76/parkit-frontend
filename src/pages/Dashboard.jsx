@@ -2,6 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import QuickActions from "@/components/dashboard/QuickActions";
+import RecommendedParking from "@/components/dashboard/RecommendedParking";
 import {
   LayoutDashboard,
   Sparkles,
@@ -85,18 +86,9 @@ export default function Dashboard() {
               Recommended Near You
             </h2>
           </div>
+
           <CardContent className="p-6">
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20">
-                <MapPin className="size-6 text-blue-400" />
-              </div>
-              <p className="mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">
-                No recommendations yet
-              </p>
-              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-                Parking spots based on your location will appear here.
-              </p>
-            </div>
+            <RecommendedParking />
           </CardContent>
         </Card>
 
