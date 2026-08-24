@@ -21,8 +21,6 @@ export default function RecentReservations() {
           user.id
         );
 
-        console.log("Reservations response:", response);
-
         const data = Array.isArray(response?.data)
           ? response.data
           : [];
