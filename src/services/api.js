@@ -62,6 +62,12 @@ export async function request(method, endpoint, body = null, options = {}) {
 
   const headers = { ...(options.headers || {}) };
 
+  // Automatically attach stored JWT token if available and not already specified
+  const token = localStorage.getItem("parkit_token");
+  if (token && !headers["Authorization"] && !headers["authorization"]) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   let fetchBody = undefined;
 
   if (body !== null && body !== undefined) {
@@ -79,7 +85,7 @@ export async function request(method, endpoint, body = null, options = {}) {
   const init = {
     method,
     headers,
-    // credentials: "include" will be added once the auth mechanism is confirmed.
+    credentials: "include",
     ...options,
     body: fetchBody,
   };

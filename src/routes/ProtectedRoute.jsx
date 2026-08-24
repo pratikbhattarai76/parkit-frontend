@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/common/Loading";
 
@@ -17,13 +17,10 @@ import Loading from "@/components/common/Loading";
  *     <Route path="/profile" element={<Profile />} />
  *     ...
  *   </Route>
- *
- * NOTE: No routes are wrapped with this component yet.
- * This component is ready to use once the real authentication mechanism is
- * implemented and verified in AuthContext.
  */
 export default function ProtectedRoute() {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return <Loading message="Checking authentication..." size="lg" />;
@@ -32,7 +29,7 @@ export default function ProtectedRoute() {
   if (!user) {
     // Preserve the originally requested path so the login page can redirect
     // back after a successful login (replace=true avoids polluting history).
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;
