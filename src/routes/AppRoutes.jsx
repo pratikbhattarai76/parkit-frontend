@@ -9,6 +9,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import Profile from "@/pages/Profile";
 import Listings from "@/pages/Listings";
 import ListingDetails from "@/pages/ListingDetails";
+import Reviews from "@/pages/Reviews";
 import Reservations from "@/pages/Reservations";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
@@ -30,6 +31,8 @@ export default function AppRoutes() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/listings" element={<Listings />} />
             <Route path="/listings/:id" element={<ListingDetails />} />
+            <Route path="/reviews" element={<Reviews />} />
+
             
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
