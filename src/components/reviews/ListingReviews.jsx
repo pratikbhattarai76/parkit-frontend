@@ -30,33 +30,45 @@ export default function ListingReviews({ listingId }) {
   const [visibleCount, setVisibleCount] = useState(5);
   const [sortBy, setSortBy] = useState("newest");
 
-  const fetchListingReviews = async () => {
-    if (!listingId) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await reviewService.getListingReviews(listingId);
-      const data =
-        response?.data?.reviews ||
-        response?.data ||
-        response?.reviews ||
-        (Array.isArray(response) ? response : []);
-
-      setReviews(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to load reviews:", err.message);
-      setError("Unable to load reviews. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchListingReviews();
+    let ignore = false;
+
+    async function loadReviews() {
+      if (!listingId) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await reviewService.getListingReviews(listingId);
+        const data =
+          response?.data?.reviews ||
+          response?.data ||
+          response?.reviews ||
+          (Array.isArray(response) ? response : []);
+
+        if (!ignore) {
+          setReviews(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error("Failed to load reviews:", err.message);
+          setError("Unable to load reviews. Please try again later.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadReviews();
+
+    return () => {
+      ignore = true;
+    };
   }, [listingId]);
 
   const handleReviewCreated = (newReview) => {
@@ -77,9 +89,6 @@ export default function ListingReviews({ listingId }) {
 
   const displayedReviews = sortedReviews.slice(0, visibleCount);
   const hasMore = sortedReviews.length > visibleCount;
-
-  const currentSortLabel =
-    SORT_OPTIONS.find((o) => o.value === sortBy)?.label || "Newest First";
 
   return (
     <div className="space-y-4">

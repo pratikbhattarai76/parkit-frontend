@@ -36,8 +36,8 @@ export default function CreateReviewForm({
     }
     if (!comment || !comment.trim()) {
       newErrors.comment = "Review comment is required.";
-    } else if (comment.trim().length < 10) {
-      newErrors.comment = "Minimum 10 characters required.";
+    } else if (comment.trim().length < 5) {
+      newErrors.comment = "Minimum 5 characters required.";
     } else if (comment.trim().length > 500) {
       newErrors.comment = "Comment must be under 500 characters.";
     }
@@ -63,13 +63,21 @@ export default function CreateReviewForm({
       };
 
       const result = await reviewService.createReview(payload);
-      const createdReview = result?.data || result || {
-        _id: `rev-${Date.now()}`,
+      const rawReview =
+        result?.data?.review ||
+        result?.data ||
+        result?.review ||
+        result || {};
+
+      const createdReview = {
+        _id: rawReview._id || rawReview.id || `rev-${Date.now()}`,
+        id: rawReview.id || rawReview._id || `rev-${Date.now()}`,
         listingId,
-        rating: Number(rating),
-        comment: comment.trim(),
-        user: user || { name: "You" },
-        createdAt: new Date().toISOString(),
+        rating: Number(rawReview.rating || rating),
+        comment: rawReview.comment || comment.trim(),
+        user: rawReview.user || user || { name: "You" },
+        userName: rawReview.userName || rawReview.user?.name || user?.name || user?.username || "You",
+        createdAt: rawReview.createdAt || rawReview.date || new Date().toISOString(),
       };
 
       setSuccessMessage("Review submitted successfully!");
@@ -85,8 +93,8 @@ export default function CreateReviewForm({
     } catch (err) {
       console.error("Error creating review:", err);
       setServerError(
-        err.response?.data?.message ||
-          err.data?.message ||
+        err.data?.message ||
+          err.response?.data?.message ||
           err.message ||
           "Failed to submit review. Please try again."
       );
@@ -95,7 +103,7 @@ export default function CreateReviewForm({
     }
   };
 
-  // Not logged in — simple prompt
+  // Not logged in — clean prompt
   if (!isAuthenticated) {
     return (
       <div className="space-y-2">
