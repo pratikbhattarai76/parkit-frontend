@@ -1,17 +1,35 @@
 import StarRating from "./StarRating";
+import { Calendar, MoreVertical } from "lucide-react";
 
 /**
  * ReviewCard Component (Intern 6 — Saurav Niroula)
- * Matches reference screenshot:
- * - Neutral circular avatar with user initial (e.g. S, A, P)
- * - User name on left, Date on right (e.g. "May 14, 2025")
- * - 5-star rating + numeric score (e.g. ★★★★★ 5)
- * - Review comment text
+ *
+ * Matches the reference screenshot:
+ * - Circular avatar with user initial (coloured background)
+ * - User name (bold, left) | Calendar icon + date (right)
+ * - Star rating row + numeric score
+ * - Review comment
+ * - Three-dot more button (top-right corner)
  */
 
-function getInitials(name) {
+const AVATAR_COLORS = [
+  "bg-blue-100 text-blue-700",
+  "bg-violet-100 text-violet-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-amber-100 text-amber-700",
+  "bg-rose-100 text-rose-700",
+  "bg-sky-100 text-sky-700",
+];
+
+function getInitial(name) {
   if (!name) return "U";
   return String(name).trim().charAt(0).toUpperCase();
+}
+
+function getAvatarColor(name) {
+  if (!name) return AVATAR_COLORS[0];
+  const code = String(name).charCodeAt(0) || 0;
+  return AVATAR_COLORS[code % AVATAR_COLORS.length];
 }
 
 function formatDate(raw) {
@@ -19,11 +37,11 @@ function formatDate(raw) {
   try {
     const d = new Date(raw);
     if (isNaN(d.getTime())) return raw;
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } catch {
     return raw;
   }
@@ -32,49 +50,65 @@ function formatDate(raw) {
 export default function ReviewCard({ review }) {
   if (!review) return null;
 
-  const user = review.user || review.userId || {};
+  const userObj = review.user || review.userId || {};
   const userName =
-    typeof user === "string"
-      ? user
-      : user.name || user.username || review.userName || "Verified User";
+    typeof userObj === "string"
+      ? userObj
+      : userObj.name || userObj.username || review.userName || "Verified User";
+
   const rating = Number(review.rating || 0);
   const comment = review.comment || "";
   const dateStr = review.createdAt || review.date || review.updatedAt;
-  const initial = getInitials(userName);
+
+  const initial = getInitial(userName);
+  const avatarColor = getAvatarColor(userName);
 
   return (
-    <div className="py-3.5 first:pt-1 last:pb-1">
+    <div className="py-4 first:pt-2 last:pb-2">
       <div className="flex items-start gap-3">
-        {/* Neutral Circular Avatar with Initial */}
-        <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200 shrink-0 select-none">
+        {/* Coloured circular avatar */}
+        <div
+          className={`h-9 w-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 select-none ${avatarColor}`}
+        >
           {initial}
         </div>
 
-        {/* Content Details */}
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* User Name & Date Row */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+          {/* Name row + date + more button */}
+          <div className="flex items-start justify-between gap-2">
+            <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
               {userName}
             </span>
-            {dateStr && (
-              <span className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500 font-normal shrink-0">
-                {formatDate(dateStr)}
-              </span>
-            )}
+
+            <div className="flex items-center gap-2 shrink-0">
+              {dateStr && (
+                <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
+                  <Calendar className="h-3 w-3" />
+                  {formatDate(dateStr)}
+                </span>
+              )}
+              <button
+                type="button"
+                aria-label="More options"
+                className="p-0.5 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                <MoreVertical className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
 
-          {/* Stars & Rating Value */}
-          <div className="flex items-center gap-1.5 mt-0.5">
+          {/* Stars + numeric value */}
+          <div className="flex items-center gap-1.5 mt-1">
             <StarRating rating={rating} size="sm" />
             <span className="text-xs font-bold text-amber-500 dark:text-amber-400">
-              {rating}
+              {rating.toFixed(1)}
             </span>
           </div>
 
           {/* Comment */}
           {comment && (
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               {comment}
             </p>
           )}
@@ -83,4 +117,3 @@ export default function ReviewCard({ review }) {
     </div>
   );
 }
-
