@@ -3,44 +3,24 @@ import reviewService from "@/services/reviewService";
 import ReviewCard from "./ReviewCard";
 import AverageRatingSummary from "./AverageRatingSummary";
 import CreateReviewForm from "./CreateReviewForm";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, ListFilter, ChevronDown } from "lucide-react";
 
 /**
  * ListingReviews Component (Intern 6 — Saurav Niroula)
+ *
  * Matches the reference screenshot layout:
- * - Top card: Reviews (Rating Score + Breakdown Bars)
- * - Middle card: Write a Review Form
- * - Bottom card: All Reviews list with "Load More Reviews" button
+ *
+ * Card 1 — "Reviews" heading (blue left accent) + rating summary with breakdown bars
+ * Card 2 — "Write a Review" form
+ * Card 3 — "All Reviews (N)" heading + "Newest First" sort label + review rows + "Load More Reviews" button
+ *
+ * All counts, averages, and reviews come from the real API. Nothing is hardcoded.
  */
 
-const FALLBACK_DEMO_REVIEWS = [
-  {
-    _id: "rev-1",
-    id: "rev-1",
-    user: { name: "Sagar Maharjan" },
-    userName: "Sagar Maharjan",
-    createdAt: "2025-05-14T10:00:00.000Z",
-    rating: 5,
-    comment: "Very secure and well maintained parking. Easy access and safe place.",
-  },
-  {
-    _id: "rev-2",
-    id: "rev-2",
-    user: { name: "Aayush KC" },
-    userName: "Aayush KC",
-    createdAt: "2025-05-10T14:30:00.000Z",
-    rating: 4,
-    comment: "Good parking space. Location is very convenient.",
-  },
-  {
-    _id: "rev-3",
-    id: "rev-3",
-    user: { name: "Pratik Shrestha" },
-    userName: "Pratik Shrestha",
-    createdAt: "2025-05-05T09:15:00.000Z",
-    rating: 4,
-    comment: "Nice place to park. Would recommend!",
-  },
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest First" },
+  { value: "highest", label: "Highest Rated" },
+  { value: "lowest", label: "Lowest Rated" },
 ];
 
 export default function ListingReviews({ listingId }) {
@@ -48,10 +28,10 @@ export default function ListingReviews({ listingId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchListingReviews = async () => {
     if (!listingId) {
-      setReviews(FALLBACK_DEMO_REVIEWS);
       setLoading(false);
       return;
     }
@@ -66,15 +46,10 @@ export default function ListingReviews({ listingId }) {
         response?.reviews ||
         (Array.isArray(response) ? response : []);
 
-      if (Array.isArray(data) && data.length > 0) {
-        setReviews(data);
-      } else {
-        // Fallback for demo when backend has no seed data yet
-        setReviews(FALLBACK_DEMO_REVIEWS);
-      }
+      setReviews(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.warn("Backend API unavailable, using verified reviews fallback:", err.message);
-      setReviews(FALLBACK_DEMO_REVIEWS);
+      console.error("Failed to load reviews:", err.message);
+      setError("Unable to load reviews. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -86,67 +61,144 @@ export default function ListingReviews({ listingId }) {
 
   const handleReviewCreated = (newReview) => {
     setReviews((prev) => [newReview, ...prev]);
+    setVisibleCount((v) => v + 1);
   };
 
-  const displayedReviews = reviews.slice(0, visibleCount);
+  // Sort reviews
+  const sortedReviews = [...reviews].sort((a, b) => {
+    if (sortBy === "newest")
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    if (sortBy === "highest")
+      return Number(b.rating || 0) - Number(a.rating || 0);
+    if (sortBy === "lowest")
+      return Number(a.rating || 0) - Number(b.rating || 0);
+    return 0;
+  });
+
+  const displayedReviews = sortedReviews.slice(0, visibleCount);
+  const hasMore = sortedReviews.length > visibleCount;
+
+  const currentSortLabel =
+    SORT_OPTIONS.find((o) => o.value === sortBy)?.label || "Newest First";
 
   return (
     <div className="space-y-4">
-      {/* 1. Rating Summary Card */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 dark:border-slate-800 dark:bg-slate-900 shadow-xs">
-        <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-3">
-          Reviews
-        </h3>
-        <AverageRatingSummary reviews={reviews} mode="breakdown" />
+      {/* ─── Card 1: Reviews Summary ─── */}
+      <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xs overflow-hidden">
+        {/* Heading with blue left accent */}
+        <div className="flex items-center gap-3 px-5 pt-5 pb-4">
+          <div className="w-1 h-5 rounded-full bg-blue-600 shrink-0" />
+          <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+            Reviews
+          </h2>
+        </div>
+
+        <div className="px-5 pb-5">
+          {loading ? (
+            <div className="py-6 flex flex-col items-center justify-center gap-2 text-slate-400 text-xs">
+              <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+              <span>Loading reviews...</span>
+            </div>
+          ) : error ? (
+            <div className="py-4 text-center">
+              <div className="inline-flex items-center gap-1.5 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded-lg border border-rose-100 dark:border-rose-900">
+                <AlertCircle className="h-4 w-4" />
+                <span>{error}</span>
+              </div>
+            </div>
+          ) : (
+            <AverageRatingSummary reviews={reviews} mode="breakdown" />
+          )}
+        </div>
       </div>
 
-      {/* 2. Write a Review Card */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 dark:border-slate-800 dark:bg-slate-900 shadow-xs">
+      {/* ─── Card 2: Write a Review ─── */}
+      <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 shadow-xs">
         <CreateReviewForm
           listingId={listingId}
           onReviewCreated={handleReviewCreated}
         />
       </div>
 
-      {/* 3. All Reviews List Card */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 dark:border-slate-800 dark:bg-slate-900 shadow-xs">
-        <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-2">
-          All Reviews
-        </h3>
+      {/* ─── Card 3: All Reviews List ─── */}
+      <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xs overflow-hidden">
+        {/* Header row: "All Reviews (N)" + "Newest First" sort */}
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+            All Reviews{" "}
+            <span className="font-semibold text-slate-500 dark:text-slate-400">
+              ({reviews.length})
+            </span>
+          </h3>
 
-        {loading ? (
-          <div className="py-8 flex flex-col items-center justify-center gap-2 text-slate-400 text-xs">
-            <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
-            <span>Loading reviews...</span>
+          {/* Sort control */}
+          <div className="relative flex items-center gap-1.5">
+            <label
+              htmlFor="review-sort"
+              className="text-xs text-slate-500 dark:text-slate-400 font-medium sr-only"
+            >
+              Sort
+            </label>
+            <select
+              id="review-sort"
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setVisibleCount(5);
+              }}
+              className="appearance-none bg-transparent border-0 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer pr-5"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ListFilter className="h-3.5 w-3.5 text-slate-400 pointer-events-none absolute right-0" />
           </div>
-        ) : error ? (
-          <div className="py-6 text-center">
-            <div className="inline-flex items-center gap-1.5 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded-lg">
-              <AlertCircle className="h-4 w-4" />
-              <span>{error}</span>
+        </div>
+
+        {/* Review rows */}
+        <div className="px-5">
+          {loading ? (
+            <div className="py-10 flex flex-col items-center justify-center gap-2 text-slate-400 text-xs">
+              <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+              <span>Loading reviews...</span>
             </div>
-          </div>
-        ) : reviews.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-500">
-            No reviews yet. Be the first to review this parking space!
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
-            {displayedReviews.map((rev) => (
-              <ReviewCard key={rev._id || rev.id || `rev-${Math.random()}`} review={rev} />
-            ))}
-          </div>
-        )}
+          ) : error ? (
+            <div className="py-6 text-center">
+              <div className="inline-flex items-center gap-1.5 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded-lg">
+                <AlertCircle className="h-4 w-4" />
+                <span>{error}</span>
+              </div>
+            </div>
+          ) : reviews.length === 0 ? (
+            <div className="py-10 text-center text-xs text-slate-500 dark:text-slate-400">
+              No reviews yet. Be the first to review this parking space!
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              {displayedReviews.map((rev, idx) => (
+                <ReviewCard
+                  key={rev._id || rev.id || `rev-${idx}`}
+                  review={rev}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
-        {/* Load More Reviews Button */}
-        {reviews.length > visibleCount && (
-          <div className="flex justify-center pt-4">
+        {/* Load More Reviews button */}
+        {hasMore && (
+          <div className="flex justify-center py-4 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
+              id="load-more-reviews-btn"
               onClick={() => setVisibleCount((prev) => prev + 5)}
-              className="cursor-pointer rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+              className="cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5"
             >
               Load More Reviews
+              <ChevronDown className="h-3.5 w-3.5" />
             </button>
           </div>
         )}
@@ -154,4 +206,3 @@ export default function ListingReviews({ listingId }) {
     </div>
   );
 }
-
